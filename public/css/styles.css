@@ -1,0 +1,371 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:opsz,wght@10..72,100..900&family=Commissioner:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --text-color: #413a4a;
+    --border-color: #e1dde9;
+    --button-outline-color: #928b9e;
+    --bg-secondary-outline-bg: #f5f5f5;
+    --bg-primary-color: #fae337;
+    --body-secondary: #f9f7fc;
+
+    --bg-blue: #0c4cfa;
+    --bg-light-blue: #f0f7ff;
+    --bg-dark-blue: #092369;
+}
+
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+
+html body * {
+    color: var(--text-color) !important;
+    font-family: "Commissioner", sans-serif !important;
+}
+
+.navbar {
+    border-color: var(--border-color);
+}
+
+
+
+.bg-light-blue {
+    background-color: var(--bg-light-blue) !important;
+}
+
+.border-gray {
+    border-color: var(--border-color) !important;
+}
+
+.navbar-nav {
+    text-decoration: none;
+}
+
+html body .text-blue {
+    color: var(--bg-blue) !important;
+}
+
+html body .text-dark-blue {
+    color: var(--bg-dark-blue) !important;
+}
+
+.text-light-gray {
+    color: rgb(104, 104, 104) !important;
+}
+
+html body .bg-secondary {
+    background-color: var(--body-secondary) !important;
+}
+
+html body .bg-blue {
+    background-color: var(--bg-blue);
+}
+
+.nav-item {
+    transition: all 0.1s ease-in-out;
+}
+
+.nav-item:hover {
+    transition: all 0.1s ease-in-out;
+    background-color: var(--bg-secondary-outline-bg);
+}
+
+html .btn.btn-outline-secondary {
+    border-color: var(--button-outline-color) !important;
+    background-color: white;
+}
+
+html .btn.btn-outline-secondary:hover {
+    background-color: var(--bg-secondary-outline-bg);
+}
+
+html .btn.btn-primary {
+    background: linear-gradient(to right, #fae337, #fae337);
+    /* gradiente plano */
+    border-color: var(--bg-primary-color) !important;
+    filter: drop-shadow(2px 3px 1.5px #ffb74a) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+html .btn.btn-primary:hover {
+    background: linear-gradient(to right, #ffb84d, #f7e64a) !important;
+}
+
+
+
+html .p-075 {
+    padding-block: 0.75rem;
+    padding-inline: 0.75rem;
+}
+
+#profileImg:hover {
+    cursor: pointer;
+    border-radius: 9999px;
+    outline: 4px solid #e5e7eb;
+}
+
+.globe-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: auto;
+    max-width: 900px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+
+
+.hero h1,
+#titlecomenzar {
+    font-size: 3rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+
+}
+
+.hero h2 {
+    font-size: 1.6rem !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.01em !important;
+    width: 100%;
+}
+
+.floating-card {
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    transition: all 0.3s ease-in-out;
+}
+
+.floating-card>span {
+    opacity: 0;
+
+}
+
+
+.floating-card:hover {
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+
+    & .floating-card-content {
+        background: linear-gradient(to right, #0039bd, #0c49f2);
+        border-color: #0039bd;
+        transition: all 0.3s ease-in-out;
+
+        & span {
+            color: white !important;
+            transition: all 0.3s ease-in-out;
+        }
+    }
+
+    &>span {
+        opacity: 1;
+        transition: all 0.3s ease-in-out;
+
+    }
+}
+
+
+
+.floating-card::before {
+    border-radius: 50%;
+    position: absolute;
+    z-index: -1;
+    content: "";
+    width: 100%;
+    top: -5px;
+    height: 220px;
+    background-color: #4AAEFF;
+    filter: blur(16px);
+    opacity: 0;
+    transition: opacity 0.3s;
+    will-change: opacity;
+}
+
+.floating-card:hover::before,
+.floating-card:focus-within::before {
+    opacity: 1;
+}
+
+
+.floating-card img {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.floating-card-content {
+    margin-top: -30px;
+
+    border: 1px solid var(--border-color);
+    padding: 5px 15px;
+    border-radius: 50px;
+    background-color: #f9f7fc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    white-space: nowrap;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background-color: #f24e49;
+    border-radius: 50%;
+}
+
+#fcard1 {
+    top: 60px;
+}
+
+#fcard2 {
+    top: 60px;
+    right: 0;
+
+}
+
+#fcard3 {
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#fcard4 {
+    top: 460px;
+    left: 10%;
+}
+
+#fcard5 {
+    top: 460px;
+    right: 10%;
+}
+
+.number {
+    width: 35px;
+    height: 35px;
+}
+
+html body .w-max {
+    width: max-content !important;
+}
+
+.divider {
+    flex: 1;
+    border-bottom: 2px dotted #999;
+    margin: 0 20px;
+    align-self: center;
+    /* Asegura que la línea queda centrada verticalmente */
+}
+
+html body .w-70 {
+    max-width: 70%;
+    width: 100% !important;
+}
+
+html body .fs-55 {
+    font-size: 1.1rem;
+}
+
+.arrow-pill {
+    width: max-content;
+    padding-inline: 0.55rem;
+    padding-block: 0.25rem;
+    background-color: rgba(101, 97, 107, 0.9);
+    position: absolute;
+    top: 15px;
+    right: 10px;
+}
+
+.l-card {
+    transition: all 0.15s ease-in-out;
+
+}
+
+.l-card:hover {
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0px 4px 13px #5f5f5f12, 0px 18px 26px #7b7b7b1f !important;
+}
+
+.divisor-solid {
+    height: 1px;
+    width: 100%;
+    background-color: var(--border-color);
+}
+
+.fs-7 {
+    font-size: 0.95rem !important;
+}
+
+.fs-8 {
+    font-size: 0.90rem !important;
+}
+
+@media (min-width: 992px) {
+
+    .hero:not(.normal) {
+        min-height: 95vh;
+    }
+
+    .hero h1 {
+        font-size: 5rem !important;
+    }
+
+    #titlecomenzar {
+        font-size: 3.5rem !important;
+    }
+
+
+    .hero h2 {
+        font-size: 2rem !important;
+        font-weight: 400 !important;
+        letter-spacing: -0.01em !important;
+        width: 50%;
+    }
+}
+
+.btn.btn-outline-primary:hover {
+    background-color: #e9f2ff;
+}
+
+#hero-form {
+    width: 100% !important;
+    max-width: 800px !important;
+}
+
+#lupa-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+}
+
+.explorar .c-card:hover {
+    cursor: pointer;
+    background-color: rgb(243, 243, 243);
+}
+
+.peticion-card img {
+
+    width: 100%;
+    height: 175px;
+    object-fit: cover;
+
+
+}
+
+.fs-3rem {
+    font-size: 3rem !important;
+}
+
+.petition-img {
+    max-height: 450px;
+}
