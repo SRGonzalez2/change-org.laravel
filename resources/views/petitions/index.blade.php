@@ -19,7 +19,7 @@
             </div>
             <section class="w-100 d-flex flex-column mt-5 px-2">
                 <div class="w-100 d-flex flex-column flex-lg-row justify-content-between">
-                    <p class="fs-4">109.898 resultados</p>
+                    <p class="fs-4">{{count($petitions)}} resultados</p>
                     <button class="btn btn-outline-primary btn-blue text-blue dropdown-toggle"
                             data-bs-toggle="dropdown">Ordenar por: Actividad
                         reciente </button>
@@ -103,7 +103,7 @@
                                     <div class="col-9">
                                         <div>
                                             <h5 class="fs-3 fw-bold">{{$petition->title}}</h5>
-                                            <span class="d-none d-md-inline-block">{{$petition->description}}}</span>
+                                            <span class="d-none d-md-inline-block">{{substr($petition->description, 0, 400)}}...</span>
                                             <div
                                                 class="d-flex column-gap-5 align-items-lg-center row-gap-2 mt-4 flex-column flex-md-row">
                                                 <a href="#"

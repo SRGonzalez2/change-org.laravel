@@ -22,7 +22,7 @@
 
 <body>
 <!--Header-->
-<nav class="navbar navbar-expand-lg bg-white overflow-hidden border-bottom border-1 py-2">
+<nav class="navbar navbar-expand-lg bg-white border-bottom border-1 py-2">
     <div class="container d-flex align-items-center px-lg-5 px-4">
 
         <a href="" class="navbar-brand p-0">
@@ -31,9 +31,14 @@
 
         <div class="ms-4 d-none d-lg-flex flex-grow-1">
             <ul class="navbar-nav d-flex align-items-center gap-4">
+                <?php if(Auth::check()){?>
                 <li class="nav-item py-1 px-2 rounded-3">
-                    <a class="nav-link fw-bold p-0" href="#">Mis peticiones</a>
+                    <a class="nav-link fw-bold p-0" href ="{{route('petitions.mine')}}">Mis peticiones</a>
                 </li>
+                <li class="nav-item py-1 px-2 rounded-3">
+                    <a class="nav-link fw-bold p-0" href="#">Mis firmas</a>
+                </li>
+                <?php }?>
                 <li class="nav-item py-1 px-2 rounded-3">
                     <a class="nav-link fw-bold p-0" href="#">Programa de socios/as</a>
                 </li>
@@ -51,9 +56,34 @@
         </div>
 
         <div class="d-flex align-items-center gap-4">
-            <button class="btn btn-outline-secondary p-075 px-3 fw-bold">Inicia una peticion</button>
-            <img id="profileImg" src="https://static.change.org/ds-v2/avatar-sunshine.svg"
-                 class="d-none d-lg-inline-block" alt="" width="35">
+            <a href="{{route("petitions.create")}}" class="btn btn-outline-secondary p-075 px-3 fw-bold">Inicia una peticion</a>
+
+            <?php if(Auth::check()){?>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown d-none d-xl-inline-block user-dropdown">
+                    <a class="nav-link dropdown-toggle" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img id="profileImg" src="https://static.change.org/ds-v2/avatar-sunshine.svg"
+                             class="d-none d-lg-inline-block" alt="Profile image" width="35">
+                    <div class="dropdown-menu dropdown-menu-right navbar-dropdown position-absolute z-3" aria-labelledby="UserDropdown">
+                        <div class="dropdown-header text-center">
+                            <p class="mb-1 mt-3 font-weight-semibold"><?=Auth::user()->name?></p>
+                            <p class="font-weight-light text-muted mb-0"><?=Auth::user()->email?></p>
+                        </div>
+                        <a class="dropdown-item" href ="{{route('profile.edit')}}">My Profile <span class="badge badge-pill badge-danger">1</span><i class="dropdown-item-icon ti-dashboard"></i></a>
+                        <a class="dropdown-item" href="{{route('logout')}}" onclick="event.preventDefault(); document.getElementById('logout').submit();" >Sign Out<i class="dropdown-item-icon ti-dashboard"></i></a>
+                        <form id="logout" action="{{route('logout')}}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    </div>
+                </li>
+            </ul>
+
+            <?php }else{  ?>
+
+            <a class="nav-link fs-5 m-2 link-danger" href="{{route('register')}}">Register</a>
+            <a class="nav-link fs-5 m-2 link-danger" href="{{route('login')}}">Login</a>
+
+            <?php } ?>
         </div>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu"
