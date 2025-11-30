@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\File;
 use App\Models\Petition;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,22 +14,33 @@ class PetitionController extends Controller
 {
 
 
-    public function index() {
+    public function index()
+    {
         $petitions = Petition::all();
-        return view('petitions.index', compact('petitions'));
+        $categories = Category::all();
+
+        return view('petitions.index', compact('petitions', 'categories'));
     }
 
-    public function show(Request $request, $id) {
+    public function show(Request $request, $id)
+    {
         $petition = Petition::findOrFail($id);
         $user = $petition->user;
-        return view('petitions.show', compact('petition', 'user'));
+
+        $hasSigned = false; //El user todavia no la ha firmado
+        if (Auth::check()) {
+            $hasSigned = $petition->signedUsers()->where('user_id', Auth::id())->exists();
+        }
+
+        return view('petitions.show', compact('petition', 'user', 'hasSigned'));
     }
 
-    public function listMine(Request $request) {
+    public function listMine(Request $request)
+    {
         try {
             $user = Auth::user();
             $petitions = Petition::where('user_id', $user->id)->paginate(5);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return back()->withErrors($exception->getMessage())->withInput();
         }
         return view('petitions.index', compact('petitions'));
@@ -39,7 +51,7 @@ class PetitionController extends Controller
     {
         $file = $req->file('file');
         $fileModel = new File;
-        $fileModel->petiton_id = $petition_id;
+        $fileModel->petition_id = $petition_id;
         if ($req->file('file')) {
             //return $req->file('file');
 
@@ -64,17 +76,18 @@ class PetitionController extends Controller
 
     public function create(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        return view('petitions.edit-add');
+        $categories = Category::all();
+        return view('petitions.edit-add', compact("categories"));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
             "title" => "required|max:255",
             "description" => "required",
             "destinatary" => "required",
             "category" => "required",
-            "file" => "required",
-            "image" => "required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048"
+            "file" => "required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
         ]);
 
         $input = $request->all();
@@ -90,17 +103,40 @@ class PetitionController extends Controller
 
             $res = $petition->save();
 
-            if($res) {
+            if ($res) {
                 $res_file = $this->fileUpload($request, $petition->id);
-                if($res_file) {
+                if ($res_file) {
                     return redirect("/mypetitions");
                 }
                 return back()->withError("Error creando la peticion")->withInput();
             }
-        } catch(\Exception $exception) {
+        } catch (Exception $exception) {
             return back()->withErrors($exception->getMessage())->withInput();
         }
 
     }
+
+
+    public function sign(Request $request, $id)
+    {
+        try {
+            $petition = Petition::findOrFail($id);
+            $user = Auth::user();
+            $signeds = $petition->signedUsers;
+            foreach ($signeds as $firma) {
+                if ($firma->id == $user->id) {
+                    return back()->withError("Ya has firmado esta peticion")->withInput();
+                }
+            }
+            $user_id = [$user->id];
+            $petition->signedUsers()->attach($user_id);
+            $petition->signeds = $petition->signeds + 1;
+            $petition->save();
+        } catch (Exception $exception) {
+            return back()->withError($exception->getMessage())->withInput();
+        }
+        return redirect()->back();
+    }
+
 
 }

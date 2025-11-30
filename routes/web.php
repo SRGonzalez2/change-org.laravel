@@ -8,12 +8,15 @@ Route::get('/users/firmas', [\App\Http\Controllers\UserController::class, 'petic
 Route::controller(\App\Http\Controllers\PetitionController::class)->group(function () {
 
     Route::get('petitions/index', 'index')->name('petitions.index');
-    Route::get('petitions/{id}', 'show' )->name('petitions.show');
+    Route::get('petitions/{id}', 'show')->name('petitions.show');
 
     Route::get('mypetitions', 'listMine')->name('petitions.mine')->middleware('auth');
 
     Route::get('petition/add', 'create')->name('petitions.create')->middleware('auth');
     Route::post('petition', 'store')->name('petition.store')->middleware('auth');
+
+    Route::get("petition/sign/{id}", "sign")->name('petition.sign')->middleware('auth');
+
 
 
     Route::get('peticionesfirmadas', 'peticionesFirmadas')->name('peticiones.peticionesfirmadas');
@@ -35,4 +38,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

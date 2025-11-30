@@ -23,9 +23,9 @@ class Petition extends Model
         return $this->belongsToMany('App\Models\User', 'petition_user');
     }
 
-    public function files(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function file(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->hasMany('App\Models\File');
+        return $this->hasOne('App\Models\File');
     }
 
 }
