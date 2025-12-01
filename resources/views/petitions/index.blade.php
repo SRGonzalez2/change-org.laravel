@@ -99,8 +99,10 @@
                                             <h5 class="fs-3 fw-bold">{{$petition->title}}</h5>
                                             <span
                                                 class="d-none d-md-inline-block">{{substr($petition->description, 0, 400)}}...</span>
+
                                             <div
                                                 class="d-flex column-gap-5 align-items-lg-center row-gap-2 mt-4 flex-column flex-md-row">
+                                                <a class="btn btn-primary" href="{{ route('petitions.show', $petition->id) }}">Ver peticion</a>
                                                 <a href="#"
                                                     class="text-decoration-none d-flex align-items-center gap-2 text-dark-blue fw-bold">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"

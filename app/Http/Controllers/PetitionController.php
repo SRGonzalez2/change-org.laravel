@@ -40,10 +40,11 @@ class PetitionController extends Controller
         try {
             $user = Auth::user();
             $petitions = Petition::where('user_id', $user->id)->paginate(5);
+            $categories = Category::all();
         } catch (Exception $exception) {
             return back()->withErrors($exception->getMessage())->withInput();
         }
-        return view('petitions.index', compact('petitions'));
+        return view('petitions.index', compact('petitions', 'categories'));
     }
 
 
@@ -87,7 +88,7 @@ class PetitionController extends Controller
             "description" => "required",
             "destinatary" => "required",
             "category" => "required",
-            "file" => "required|file|image|mimes:jpeg,png,jpg,gif,svg|max:2048",
+            "file" => "required|file|image|mimes:jpeg,webp,png,jpg,gif,svg|max:2048",
         ]);
 
         $input = $request->all();

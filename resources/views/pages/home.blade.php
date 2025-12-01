@@ -210,7 +210,7 @@
                 @foreach ($petitions as $petition)
                     <div class="col-12 col-md-3">
                         <div class="card l-card shadow-sm position-relative">
-                            <img src={{ asset('petitions/' . $petition->file->name) }} class="card-img-top" alt="...">
+                            <img onclick="window.location.href='{{ route('petitions.show', $petition->id) }}'" src={{ asset('petitions/' . $petition->file->name) }} class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title fw-bold">{{ $petition->title }}</h5>
                                 <a href="#"
