@@ -139,5 +139,13 @@ class PetitionController extends Controller
         return redirect()->back();
     }
 
+    public function signedPetitions() {
+        $id = Auth::id();
+        $user = User::findOrFail($id);
+        $petitions = $user->signedPetitions;
+        $categories = Category::all();
+        return view('petitions.index', compact('petitions', 'categories'));
+    }
+
 
 }

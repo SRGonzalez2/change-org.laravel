@@ -36,7 +36,7 @@
                         <a class="nav-link fw-bold p-0" href="{{route('petitions.mine')}}">Mis peticiones</a>
                     </li>
                     <li class="nav-item py-1 px-2 rounded-3">
-                        <a class="nav-link fw-bold p-0" href="#">Mis firmas</a>
+                        <a class="nav-link fw-bold p-0" href="{{route("petition.signedpetitions")}}">Mis firmas</a>
                     </li>
                     <?php }?>
                     <li class="nav-item py-1 px-2 rounded-3">

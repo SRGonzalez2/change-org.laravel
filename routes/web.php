@@ -16,6 +16,7 @@ Route::controller(\App\Http\Controllers\PetitionController::class)->group(functi
     Route::post('petition', 'store')->name('petition.store')->middleware('auth');
 
     Route::get("petition/sign/{id}", "sign")->name('petition.sign')->middleware('auth');
+    Route::get("mysignedpetitions", "signedPetitions")->name('petition.signedpetitions')->middleware('auth');
 
 
 
