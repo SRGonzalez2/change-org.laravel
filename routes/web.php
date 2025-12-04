@@ -15,6 +15,8 @@ Route::controller(\App\Http\Controllers\PetitionController::class)->group(functi
     Route::get('petition/add', 'create')->name('petitions.create')->middleware('auth');
     Route::post('petition', 'store')->name('petition.store')->middleware('auth');
 
+    Route::delete("/petition/{id}", 'delete')->name("petition.delete")->middleware('auth');
+
     Route::get("petition/sign/{id}", "sign")->name('petition.sign')->middleware('auth');
     Route::get("mysignedpetitions", "signedPetitions")->name('petition.signedpetitions')->middleware('auth');
 

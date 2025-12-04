@@ -14,10 +14,20 @@ class PetitionController extends Controller
 {
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $petitions = Petition::all();
         $categories = Category::all();
+
+        $sort = $request->get('sort', 'created_at');
+        $direction = $request->get('direction', 'desc');
+
+        $allowed = ['created_at', 'signeds'];
+
+        if (!in_array($sort, $allowed)) {
+            $sort = 'created_at';
+        }
+
+        $petitions = Petition::orderBy($sort, $direction)->get();
 
         return view('petitions.index', compact('petitions', 'categories'));
     }
@@ -139,7 +149,8 @@ class PetitionController extends Controller
         return redirect()->back();
     }
 
-    public function signedPetitions() {
+    public function signedPetitions()
+    {
         $id = Auth::id();
         $user = User::findOrFail($id);
         $petitions = $user->signedPetitions;
@@ -147,5 +158,38 @@ class PetitionController extends Controller
         return view('petitions.index', compact('petitions', 'categories'));
     }
 
+    public function delete($id)
+    {
+        try {
+            $petition = Petition::findOrFail($id);
+
+            $userId = Auth::id();
+
+            if ($petition->user_id !== $userId) {
+                return back()->withErrors("No tienes permiso para borrar esta peticion");
+            }
+
+            if ($petition->file) {
+                $path = public_path('petitions/' . $petition->file->file_path);
+
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+
+                $petition->file->delete();
+            }
+
+            // Borrar firmas relacionadas
+            $petition->signedUsers()->detach();
+
+            // Borrar petición
+            $petition->delete();
+
+            return redirect('/mypetitions')->with('success', 'Petición eliminada correctamente.');
+
+        } catch (Exception $exception) {
+            return back()->withErrors($exception->getMessage());
+        }
+    }
 
 }
