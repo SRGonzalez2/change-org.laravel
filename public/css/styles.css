@@ -369,3 +369,105 @@ html body .fs-55 {
 .petition-img {
     max-height: 450px;
 }
+
+/* Estilos Generales para el Sidebar (Sin Cambios) */
+.sidebar {
+    background-color: #e51d3b;
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+/* 1. Estilo del Encabezado 'change.org' (Sin Cambios) */
+.sidebar-header {
+    background-color: #e51d3b;
+    height: 60px;
+    padding-left: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.change-org-text {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* 2. Estilo de la Sección Admin (Sin Cambios) */
+.admin-section {
+    background-color: #e51d3b;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    padding-left: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid white;
+    object-fit: cover;
+    background-color: white;
+}
+
+.admin-text {
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* 3. Estilo del Título 'Main Menu' (Letras Blancas pero más Ligeras) */
+.menu-title-section {
+    padding: 20px 15px 10px 15px; /* Más espaciado superior */
+}
+
+.menu-title {
+    color: white; /* Letra blanca */
+    font-size: 0.95rem;
+    font-weight: 400; /* Ligeras, menos rellenas que '500' o 'bold' */
+    opacity: 0.7; /* Más transparencia para un look sutil */
+    margin-bottom: 0;
+}
+
+
+/* 4. Estilo del Menú Principal (¡Más Espaciado!) */
+.main-menu {
+    padding-top: 5px;
+}
+
+/* ESTADO NORMAL: Fondo rojo, Letras blancas (Más Espaciado Vertical) */
+.main-menu .nav-link {
+    color: white !important;
+    background-color: transparent;
+    padding: 12px 15px; /* Aumento de padding vertical de 12px */
+    opacity: 0.8;
+    font-weight: 500; /* Mantenemos este peso para los links del menú */
+    text-decoration: none;
+    transition: color 0.3s, background-color 0.3s;
+}
+
+/* ESTADO HOVER: Fondo ligeramente oscuro, Letras ROJAS */
+.main-menu .nav-link:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #e51d3b !important; /* Color rojo del menú al hacer hover */
+    opacity: 1;
+}
+
+/* Estilo para el elemento activo (Peticiones) */
+.main-menu .nav-link.active {
+    background-color: #d11b33;
+    color: white !important;
+    opacity: 1;
+    border-left: 3px solid white;
+    padding-left: 12px;
+}
+
+/* Estilo para los iconos (Sin Cambios) */
+.main-menu .nav-link i {
+    color: inherit;
+    margin-right: 10px;
+    font-size: 0.6rem;
+}
