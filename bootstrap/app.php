@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(
             except: ["register", "login"]
         );
+        $middleware->alias([
+            'admin' => 'App\Http\Middleware\Admin',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

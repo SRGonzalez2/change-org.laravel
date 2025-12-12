@@ -1,10 +1,13 @@
 <?php
 
+
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\PetitionController;
 
 Route::get('/', [\App\Http\Controllers\PageController::class, 'home'])->name('home');
-Route::get('/users/firmas', [\App\Http\Controllers\UserController::class, 'peticionesFirmadas'])->middleware('auth');
 Route::controller(\App\Http\Controllers\PetitionController::class)->group(function () {
 
     Route::get('petitions/index', 'index')->name('petitions.index');
@@ -37,6 +40,25 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// --- ZONA DE ADMINISTRACIÓN (Protegida por middleware 'admin') ---
+Route::middleware(['auth', 'admin'])->group(function () {
+
+    // Redirección del panel principal a peticiones
+    Route::get('/admin', function () {
+        return redirect()->route('admin.peticiones.index');
+    })->name('admin.home');
+
+    // Rutas de Peticiones (Admin)
+    Route::controller(\App\Http\Controllers\Admin\AdminPetitionController::class)->group(function() {
+        Route::get('admin', 'index')->name('admin.home');
+        Route::delete('admin/{petition}/delete', 'delete')->name('admin.destroy');
+    });
+
+
+
+
 });
 
 require __DIR__ . '/auth.php';

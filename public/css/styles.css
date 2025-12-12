@@ -19,11 +19,6 @@
     box-sizing: border-box;
 }
 
-html body * {
-    color: var(--text-color) !important;
-    font-family: "Commissioner", sans-serif !important;
-}
-
 .navbar {
     border-color: var(--border-color);
 }
@@ -370,104 +365,131 @@ html body .fs-55 {
     max-height: 450px;
 }
 
-/* Estilos Generales para el Sidebar (Sin Cambios) */
+
+
+/* --- Sidebar --- */
 .sidebar {
-    background-color: #e51d3b;
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-}
-
-/* 1. Estilo del Encabezado 'change.org' (Sin Cambios) */
-.sidebar-header {
-    background-color: #e51d3b;
-    height: 60px;
-    padding-left: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.change-org-text {
+    min-height: 100vh;
+    background-color: #ff3030; /* Rojo Change.org */
     color: white;
-    font-size: 1.5rem;
+    width: 250px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s;
+}
+
+.sidebar-logo {
     font-weight: bold;
+    font-size: 1.5rem;
+    padding: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
 }
 
-/* 2. Estilo de la Sección Admin (Sin Cambios) */
-.admin-section {
-    background-color: #e51d3b;
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
-    padding-left: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.user-panel {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-.admin-avatar {
-    width: 35px;
-    height: 35px;
+.user-panel img {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 2px solid white;
+    margin-right: 10px;
     object-fit: cover;
     background-color: white;
 }
 
-.admin-text {
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.sidebar-menu li a {
     color: white;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-/* 3. Estilo del Título 'Main Menu' (Letras Blancas pero más Ligeras) */
-.menu-title-section {
-    padding: 20px 15px 10px 15px; /* Más espaciado superior */
-}
-
-.menu-title {
-    color: white; /* Letra blanca */
-    font-size: 0.95rem;
-    font-weight: 400; /* Ligeras, menos rellenas que '500' o 'bold' */
-    opacity: 0.7; /* Más transparencia para un look sutil */
-    margin-bottom: 0;
-}
-
-
-/* 4. Estilo del Menú Principal (¡Más Espaciado!) */
-.main-menu {
-    padding-top: 5px;
-}
-
-/* ESTADO NORMAL: Fondo rojo, Letras blancas (Más Espaciado Vertical) */
-.main-menu .nav-link {
-    color: white !important;
-    background-color: transparent;
-    padding: 12px 15px; /* Aumento de padding vertical de 12px */
-    opacity: 0.8;
-    font-weight: 500; /* Mantenemos este peso para los links del menú */
     text-decoration: none;
-    transition: color 0.3s, background-color 0.3s;
+    display: block;
+    padding: 15px 20px;
+    font-weight: 500;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
 }
 
-/* ESTADO HOVER: Fondo ligeramente oscuro, Letras ROJAS */
-.main-menu .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    color: #e51d3b !important; /* Color rojo del menú al hacer hover */
-    opacity: 1;
+.sidebar-menu li a:hover, .sidebar-menu li a.active {
+    background-color: rgba(0,0,0,0.1);
+    border-left: 4px solid white;
 }
 
-/* Estilo para el elemento activo (Peticiones) */
-.main-menu .nav-link.active {
-    background-color: #d11b33;
-    color: white !important;
-    opacity: 1;
-    border-left: 3px solid white;
-    padding-left: 12px;
+.sidebar-menu .menu-header {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    opacity: 0.7;
 }
 
-/* Estilo para los iconos (Sin Cambios) */
-.main-menu .nav-link i {
-    color: inherit;
-    margin-right: 10px;
+/* --- Main Content Wrapper --- */
+.main-wrapper {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Top Navbar --- */
+.top-navbar {
+    background: white;
+    height: 70px;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+
+.search-bar input {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    padding: 8px 20px;
+    background-color: #f9f9f9;
+}
+
+.top-icons i {
+    font-size: 1.2rem;
+    color: #555;
+    margin-left: 20px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+}
+
+.top-icons i:hover {
+    color: #ff3030;
+}
+
+.badge-notification {
+    position: absolute;
+    top: -5px;
+    right: -8px;
     font-size: 0.6rem;
+    padding: 3px 5px;
+    border-radius: 50%;
 }
+
+/* --- Content Container --- */
+.content-container {
+    padding: 30px;
+    flex-grow: 1;
+}
+
