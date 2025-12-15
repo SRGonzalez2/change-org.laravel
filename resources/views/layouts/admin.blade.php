@@ -44,13 +44,13 @@
         <li class="menu-header">Gestión Principal</li>
 
         <li>
-            <a href="/admin" class="{{ request()->is('admin') || request()->is('admin/petitions*') ? 'active' : '' }}">
+            <a href="{{route('admin.home')}}" class="{{ request()->is('admin') || request()->is('admin/petitions*') ? 'active' : '' }}">
                 <i class="fa-solid fa-file-signature me-2"></i>Peticiones
             </a>
         </li>
 
         <li>
-            <a href="#" class="{{ request()->is('admin/categories*') ? 'active' : '' }}">
+            <a href="{{route('admin.categories')}}" class="{{ request()->is('admin/categories*') ? 'active' : '' }}">
                 <i class="fa-solid fa-layer-group me-2"></i>Categorias
             </a>
         </li>

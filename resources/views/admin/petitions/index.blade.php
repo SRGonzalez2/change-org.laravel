@@ -5,8 +5,8 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold text-dark">Gestión de Peticiones</h3>
-            <a  class="btn btn-primary px-4 shadow-sm">
-                <i class="fas fa-plus me-2"></i> Nueva Petición
+            <a href="{{route("admin.petition.create")}}"  class="btn btn-primary px-4 shadow-sm">
+                <i  class="fas fa-plus me-2"></i> Nueva Petición
             </a>
         </div>
 
@@ -69,7 +69,7 @@
 
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a  class="btn btn-outline-primary btn-sm" title="Editar">
+                                        <a href="{{ route('admin.petition.edit', $petition->id) }}"  class="btn btn-outline-primary btn-sm" title="Editar">
                                             <i class="fas fa-pen"></i>
                                         </a>
 

@@ -55,7 +55,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Rutas de Peticiones (Admin)
     Route::controller(\App\Http\Controllers\Admin\AdminPetitionController::class)->group(function() {
         Route::get('admin', 'index')->name('admin.home');
+
         Route::delete('admin/{petition}/delete', 'delete')->name('admin.destroy');
+        Route::get('admin/petition/new', 'create')->name('admin.petition.create');
+        Route::post('admin/petition/new', 'store')->name('admin.petition.store');
+        Route::get('admin/petition/{petition}/edit', 'edit')->name('admin.petition.edit');
+        Route::put('admin/petition/{petition}/update', 'update')->name('admin.petition.update');
+
+        Route::get('admin/categories', 'categories')->name('admin.categories');
+
     });
 
 
