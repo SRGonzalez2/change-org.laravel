@@ -134,9 +134,6 @@ class AdminPetitionController extends Controller
         return 1;
     }
 
-    public function categories() {
-        $categories = Category::all();
-        return view('admin.categories.index', compact('categories'));
-    }
+
 
 }

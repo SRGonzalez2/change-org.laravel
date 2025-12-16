@@ -1,36 +1,69 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container-fluid py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="h3 fw-bold text-dark mb-0">Nueva Categoría</h1>
-                    <a href="{{ route('admin.categories') }}" class="btn btn-outline-secondary rounded-pill px-4">
-                        <i class="bi bi-arrow-left me-2"></i>Volver
-                    </a>
-                </div>
+    <div class="container-fluid">
 
-                <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <form  method="POST">
-                        @csrf
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold text-dark">Gestión de Categorias</h3>
+            <a href="{{route("admin.category.create")}}"  class="btn btn-primary px-4 shadow-sm">
+                <i  class="fas fa-plus me-2"></i> Nueva Categoria
+            </a>
+        </div>
 
-                        <div class="form-floating mb-4">
-                            <input type="text" class="form-control" id="name" name="name" placeholder="Nombre" value="{{ old('name') }}" required>
-                            <label for="name">Nombre de la Categoría</label>
-                            @error('name')
-                            <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
-                        </div>
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                        <tr class="text-uppercase text-secondary" style="font-size: 0.75rem; letter-spacing: 1px;">
+                            <th class="ps-4 py-3">Descripción</th>
+                            <th class="py-3 text-center">Numero de usos</th>
+                            <th class="py-3 text-end pe-4">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($categories as $category)
+                            <tr>
+                                <td>
+                                    <span class="fw-bold text-dark d-block">{{ Str::limit($category->name, 40) }}</span>
+                                    <small class="text-muted">ID: #{{ $category->id }}</small>
+                                </td>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-lg text-white" style="background-color: #DC1E1E;">
-                                Crear Categoría
-                            </button>
-                        </div>
-                    </form>
+                                <td class="text-muted text-center">
+                                    {{ count($category->petitions) }}
+                                </td>
+
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ route('admin.category.edit', $category->id) }}"  class="btn btn-outline-primary btn-sm" title="Editar">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+
+                                        <form method="POST" action="{{ route('admin.category.destroy', $category->id) }}" onsubmit="return confirm('¿Seguro que quieres borrar esta petición?');" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i>
+                                        <p class="h5">No hay categorias registradas.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+
     </div>
 @endsection

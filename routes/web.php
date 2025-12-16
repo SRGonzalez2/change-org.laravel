@@ -61,9 +61,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('admin/petition/new', 'store')->name('admin.petition.store');
         Route::get('admin/petition/{petition}/edit', 'edit')->name('admin.petition.edit');
         Route::put('admin/petition/{petition}/update', 'update')->name('admin.petition.update');
+    });
 
-        Route::get('admin/categories', 'categories')->name('admin.categories');
-
+    //Rutas de Categorias (admin)
+    Route::controller(\App\Http\Controllers\Admin\AdminCategoryController::class)->group(function() {
+        Route::get('admin/categories', 'index')->name('admin.categories');
+        Route::delete('admin/category/{category}/delete', 'delete')->name('admin.category.destroy');
+        Route::get('admin/category/new', 'create')->name('admin.category.create');
+        Route::post('admin/category/new', 'store')->name('admin.category.store');
+        Route::get('admin/category/{category}/edit', 'edit')->name('admin.category.edit');
+        Route::put('admin/category/{category}/update', 'update')->name('admin.category.update');
     });
 
 
