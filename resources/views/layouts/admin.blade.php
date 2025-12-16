@@ -55,7 +55,7 @@
             </a>
         </li>
         <li>
-            <a href="#" class="{{ request()->is('admin/users*') ? 'active' : '' }}">
+            <a href="{{route('admin.users')}}" class="{{ request()->is('admin/users*') ? 'active' : '' }}">
                 <i class="fa-solid fa-user me-2"></i>Usuarios
             </a>
         </li>

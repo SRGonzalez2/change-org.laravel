@@ -1,7 +1,7 @@
 <?php
 
 
-
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
@@ -71,6 +71,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
         Route::post('admin/category/new', 'store')->name('admin.category.store');
         Route::get('admin/category/{category}/edit', 'edit')->name('admin.category.edit');
         Route::put('admin/category/{category}/update', 'update')->name('admin.category.update');
+    });
+
+    //Rutas de usuarios (admin)
+    Route::controller(AdminUserController::class)->group(function() {
+        Route::get('admin/users', 'index')->name('admin.users');
+        Route::delete('admin/user/{user}/delete', 'delete')->name('admin.user.destroy');
+        Route::get('admin/user/new', 'create')->name('admin.user.create');
+        Route::post('admin/user/new', 'store')->name('admin.user.store');
+        Route::get('admin/user/{user}/edit', 'edit')->name('admin.user.edit');
+        Route::put('admin/user/{user}/update', 'update')->name('admin.user.update');
+
     });
 
 
