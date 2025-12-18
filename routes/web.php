@@ -25,13 +25,13 @@ Route::controller(\App\Http\Controllers\PetitionController::class)->group(functi
 
 
 
-    Route::get('peticionesfirmadas', 'peticionesFirmadas')->name('peticiones.peticionesfirmadas');
+    Route::get('peticionesfirmadas', 'peticionesFirmadas')->name('peticiones.peticionesfirmadas')->middleware('auth');
     Route::get('peticiones/{id}', 'show')->name('peticiones.show');
 
-    Route::delete('peticiones/{id}', 'delete')->name('peticiones.delete');
-    Route::put('peticiones/{id}', 'update')->name('peticiones.update');
-    Route::post('peticiones/firmar/{id}', 'firmar')->name('peticiones.firmar');
-    Route::get('peticiones/edit/{id}', 'update')->name('peticiones.edit');
+    Route::delete('peticiones/{id}', 'delete')->name('peticiones.delete')->middleware('auth');
+    Route::post('peticiones/firmar/{id}', 'firmar')->name('peticiones.firmar')->middleware('auth');
+    Route::get('peticiones/edit/{petition}', 'edit')->name('peticiones.edit')->middleware('auth');
+    Route::put('peticiones/update/{petition}', 'update')->name('peticiones.update')->middleware('auth');
 });
 
 Route::get('/dashboard', function () {

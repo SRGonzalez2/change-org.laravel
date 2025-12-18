@@ -7,12 +7,13 @@ use App\Models\File;
 use App\Models\Petition;
 use App\Models\User;
 use Exception;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PetitionController extends Controller
 {
-
+    use AuthorizesRequests;
 
     public function index(Request $request)
     {
@@ -56,6 +57,7 @@ class PetitionController extends Controller
         }
         return view('petitions.index', compact('petitions', 'categories'));
     }
+
 
 
     public function fileUpload(Request $req, $petition_id = null)
@@ -160,8 +162,10 @@ class PetitionController extends Controller
 
     public function delete($id)
     {
+
         try {
             $petition = Petition::findOrFail($id);
+            $this->authorize('delete', $petition);
 
             $userId = Auth::id();
 
@@ -192,4 +196,46 @@ class PetitionController extends Controller
         }
     }
 
+    public function edit(Petition $petition)
+    {
+        $categories = Category::all();
+        return view('petitions.edit', compact('petition', 'categories'));
+    }
+    public function update(Request $request, Petition $petition) {
+        $this->authorize('update', $petition);
+
+        try {
+            $userId = Auth::id();
+            if ($petition->user_id !== $userId) {
+                return back()->withErrors("No tienes permiso para borrar esta peticion");
+            }
+
+            $request->validate([
+                'title' => 'required|max:255',
+                'description' => 'required',
+                'category_id' => 'required',
+                'file' => 'nullable|file|image|mimes:jpeg,webp,png,jpg,gif,svg|max:2048',
+            ]);
+
+            $petition->title = $request->title;
+            $petition->description = $request->description;
+            $petition->category_id = $request->category_id;
+
+            if ($request->hasFile('file')) {
+                // Borra la imagen antigua si quieres
+                if ($petition->file) {
+                    @unlink(public_path('petitions/' . $petition->file->file_path));
+                    $petition->file->delete();
+                }
+                $this->fileUpload($request, $petition->id);
+            }
+
+            $petition->save();
+
+
+            return redirect()->route('petitions.mine')->with('success', 'Petición actualizada correctamente.');
+        } catch (Exception $exception) {
+            return back()->withErrors($exception->getMessage());
+        }
+    }
 }

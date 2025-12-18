@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('petitions', function (Blueprint $table) {
-            $table->dropForeign(['category_id']);
+            $table->unsignedBigInteger('category_id')->nullable()->change();
 
             $table->foreign('category_id')
                 ->references('id')
