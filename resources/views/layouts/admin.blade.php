@@ -59,13 +59,6 @@
                 <i class="fa-solid fa-user me-2"></i>Usuarios
             </a>
         </li>
-
-        <li class="menu-header">Sistema</li>
-        <li>
-            <a href="{{ url('/') }}" target="_blank">
-                <i class="fa fa-external-link-alt me-2"></i> Ver Web Pública
-            </a>
-        </li>
     </ul>
 </div>
 <div class="main-wrapper">
@@ -108,7 +101,7 @@
     </div>
 
     <footer class="bg-white text-center py-3 text-muted mt-auto border-top">
-        <small>&copy; {{ date('Y') }} Change.org Clon - Panel de Control.</small>
+        <small>&copy; {{ date('Y') }} Change.org - Admin Dashboard.</small>
     </footer>
 
 </div>
