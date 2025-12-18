@@ -132,7 +132,7 @@
                                                     href="{{ route('petitions.show', $petition->id) }}">Ver peticion</a>
                                                 @can('update', $petition)
                                                     <a class="btn btn-outline-secondary"
-                                                       href="{{ route('peticiones.edit', $petition->id) }}">Editar peticion</a
+                                                       href="{{ route('peticiones.edit', $petition->id) }}">Editar peticion</a>
                                                 @endcan
                                                 @can('delete', $petition)
                                                     <form action="{{ route('petition.delete', $petition->id) }}" method="POST"

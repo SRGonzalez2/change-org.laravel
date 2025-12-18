@@ -52,6 +52,12 @@ class PetitionPolicy
         return false;
     }
 
+    public function edit(User $user, Petition $petition): bool {
+        if($user->role_id==1 && $petition->user_id==$user->id){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Determine whether the user can delete the model.

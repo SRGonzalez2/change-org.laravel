@@ -198,6 +198,8 @@ class PetitionController extends Controller
 
     public function edit(Petition $petition)
     {
+        $this->authorize('edit', $petition);
+
         $categories = Category::all();
         return view('petitions.edit', compact('petition', 'categories'));
     }
