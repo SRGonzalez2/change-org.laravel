@@ -30,7 +30,10 @@ class PetitionController extends Controller
 
         $petitions = Petition::orderBy($sort, $direction)->get();
 
-        return view('petitions.index', compact('petitions', 'categories'));
+        return response()->json([
+            'petitions' => $petitions,
+            'categories' => Category::all()
+        ]);
     }
 
     public function show(Request $request, $id)
@@ -43,7 +46,11 @@ class PetitionController extends Controller
             $hasSigned = $petition->signedUsers()->where('user_id', Auth::id())->exists();
         }
 
-        return view('petitions.show', compact('petition', 'user', 'hasSigned'));
+        return response()->json([
+            'petition' => $petition,
+            'user' => $petition->user,
+            'hasSigned' => $hasSigned
+        ]);
     }
 
     public function listMine(Request $request)
@@ -53,12 +60,17 @@ class PetitionController extends Controller
             $petitions = Petition::where('user_id', $user->id)->paginate(5);
             $categories = Category::all();
         } catch (Exception $exception) {
-            return back()->withErrors($exception->getMessage())->withInput();
+            return response()->json(['error' => $exception->getMessage()], 400);
         }
-        return view('petitions.index', compact('petitions', 'categories'));
+
+        return response()->json([
+            'petitions' => $petitions,
+            'categories' => $categories
+        ]);
+
+
+
     }
-
-
 
     public function fileUpload(Request $req, $petition_id = null)
     {
@@ -115,16 +127,14 @@ class PetitionController extends Controller
             $petition->status = "pending";
 
             $res = $petition->save();
+            $res_file = $this->fileUpload($request, $petition->id);
+            return response()->json([
+                'message' => 'Petición creada correctamente',
+                'petition' => $petition
+            ], 201);
 
-            if ($res) {
-                $res_file = $this->fileUpload($request, $petition->id);
-                if ($res_file) {
-                    return redirect("/mypetitions");
-                }
-                return back()->withError("Error creando la peticion")->withInput();
-            }
         } catch (Exception $exception) {
-            return back()->withErrors($exception->getMessage())->withInput();
+            return response()->json(['error' => $exception->getMessage()], 400);
         }
 
     }
@@ -138,17 +148,17 @@ class PetitionController extends Controller
             $signeds = $petition->signedUsers;
             foreach ($signeds as $firma) {
                 if ($firma->id == $user->id) {
-                    return back()->withError("Ya has firmado esta peticion")->withInput();
+                    return response()->json(['error' => 'Ya has firmado esta petición'], 409);
                 }
             }
             $user_id = [$user->id];
             $petition->signedUsers()->attach($user_id);
             $petition->signeds = $petition->signeds + 1;
             $petition->save();
+            return response()->json(['message' => 'Petición firmada']);
         } catch (Exception $exception) {
-            return back()->withError($exception->getMessage())->withInput();
+            return response()->json(['error' => $exception->getMessage()], 409);
         }
-        return redirect()->back();
     }
 
     public function signedPetitions()
@@ -157,7 +167,10 @@ class PetitionController extends Controller
         $user = User::findOrFail($id);
         $petitions = $user->signedPetitions;
         $categories = Category::all();
-        return view('petitions.index', compact('petitions', 'categories'));
+        return response()->json([
+            'petitions' => $petitions,
+            'categories' => $categories
+        ]);
     }
 
     public function delete($id)
@@ -189,10 +202,10 @@ class PetitionController extends Controller
             // Borrar petición
             $petition->delete();
 
-            return redirect('/mypetitions')->with('success', 'Petición eliminada correctamente.');
+            return response()->json(['message' => 'Petición eliminada correctamente']);
 
         } catch (Exception $exception) {
-            return back()->withErrors($exception->getMessage());
+            return response()->json(['error' => $exception->getMessage()], 409);
         }
     }
 
@@ -203,6 +216,7 @@ class PetitionController extends Controller
         $categories = Category::all();
         return view('petitions.edit', compact('petition', 'categories'));
     }
+
     public function update(Request $request, Petition $petition) {
         $this->authorize('update', $petition);
 
@@ -234,10 +248,13 @@ class PetitionController extends Controller
 
             $petition->save();
 
+            return response()->json([
+                'message' => 'Petición actualizada',
+                'petition' => $petition
+            ]);
 
-            return redirect()->route('petitions.mine')->with('success', 'Petición actualizada correctamente.');
         } catch (Exception $exception) {
-            return back()->withErrors($exception->getMessage());
+            return response()->json(['error' => $exception->getMessage()], 409);
         }
     }
 }

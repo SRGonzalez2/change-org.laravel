@@ -12,6 +12,11 @@ class PageController extends Controller
     {
         $petitions = Petition::orderBy('created_at', 'desc')->take(4)->get();
         $categories = Category::all();
-        return view('pages.home', compact('petitions', 'categories'));
+
+        return response()->json([
+            'petitions' => $petitions,
+            'categories' => $categories,
+        ]);
+
     }
 }
