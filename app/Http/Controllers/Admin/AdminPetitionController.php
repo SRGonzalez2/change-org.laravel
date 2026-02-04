@@ -7,133 +7,147 @@ use App\Models\Category;
 use App\Models\File;
 use App\Models\Petition;
 use Exception;
-use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AdminPetitionController extends Controller
 {
-    //Ver todas las peticiones para el admin
+    private function sendResponse($data, $message, $code = 200)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'message' => $message
+        ], $code);
+    }
+
+    private function sendError($error, $errorMessages = [], $code = 400)
+    {
+        $response = [
+            'success' => false,
+            'message' => $error,
+        ];
+
+        if (!empty($errorMessages)) {
+            $response['errors'] = $errorMessages;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    // Ver todas las peticiones (admin)
     public function index()
     {
-        $petitions = Petition::orderBy('created_at', 'desc')->get();
-        return view('admin.petitions.index', compact('petitions'));
+        try {
+            $petitions = Petition::with(['user', 'category', 'files'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return $this->sendResponse($petitions, 'Peticiones obtenidas correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al obtener peticiones', $e->getMessage(), 500);
+        }
     }
 
-    //Para borrar las peticiones
+    // Eliminar una petición
     public function delete($id)
     {
-        $petition = Petition::findOrFail($id);
-        $petition->delete();
-        return back();
+        try {
+            $petition = Petition::findOrFail($id);
+
+            foreach ($petition->files as $file) {
+                Storage::disk('public')->delete($file->file_path);
+                $file->delete();
+            }
+
+            $petition->delete();
+
+            return $this->sendResponse(null, 'Petición eliminada correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al eliminar la petición', $e->getMessage(), 500);
+        }
     }
 
-    public function create() {
-        $categories = Category::all();
-        return view('admin.petitions.edit-add', compact('categories'));
-    }
-
-    public function store(\Illuminate\Http\Request $request)
+    // Crear petición (admin)
+    public function store(Request $request)
     {
-
         $request->validate([
-            "title" => "required|max:255",
-            "description" => "required",
-            "category_id" => "required",
-            "file" => "required|file|image|mimes:jpeg,webp,png,jpg,gif,svg|max:2048",
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'file' => 'required|file|image|mimes:jpeg,webp,png,jpg,gif,svg|max:2048',
         ]);
 
-        $input = $request->all();
         try {
+            $category = Category::findOrFail($request->category_id);
 
-            $category = Category::findOrFail($input['category_id']);
             $petition = new Petition();
             $petition->title = $request->title;
             $petition->description = $request->description;
             $petition->signeds = 0;
             $petition->status = 'pending';
-            $petition->destinatary = "everyone";
+            $petition->destinatary = 'everyone';
             $petition->category()->associate($category);
             $petition->user()->associate(Auth::user());
+            $petition->save();
 
-            $res = $petition->save();
+            $this->fileUpload($request, $petition->id);
 
-            if ($res) {
-
-                $res_file = $this->fileUpload($request, $petition->id);
-
-                if ($res_file) {
-                    return redirect("/admin");
-                }
-                return back()->withError("Error creando la peticion")->withInput();
-            }
-        } catch (Exception $exception) {
-            return back()->withErrors($exception->getMessage())->withInput();
+            return $this->sendResponse($petition->load('files'), 'Petición creada con éxito', 201);
+        } catch (Exception $e) {
+            return $this->sendError('Error al crear la petición', $e->getMessage(), 500);
         }
-
     }
 
-    public function edit(Petition $petition)
-    {
-        $categories = Category::all();
-        return view('admin.petitions.edit-add', compact('petition', 'categories'));
-    }
-
+    // Actualizar petición
     public function update(Request $request, Petition $petition)
     {
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'category_id' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'status' => 'required',
             'file' => 'nullable|file|image|mimes:jpeg,webp,png,jpg,gif,svg|max:2048',
         ]);
 
-        $petition->title = $request->title;
-        $petition->description = $request->description;
-        $petition->category_id = $request->category_id;
-        $petition->status = $request->status;
+        try {
+            $petition->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'category_id' => $request->category_id,
+                'status' => $request->status,
+            ]);
 
-        if ($request->hasFile('file')) {
-            // Borra la imagen antigua si quieres
-            if ($petition->file) {
-                @unlink(public_path('petitions/' . $petition->file->file_path));
-                $petition->file->delete();
+            if ($request->hasFile('file')) {
+                foreach ($petition->files as $file) {
+                    Storage::disk('public')->delete($file->file_path);
+                    $file->delete();
+                }
+                $this->fileUpload($request, $petition->id);
             }
-            $this->fileUpload($request, $petition->id);
+
+            return $this->sendResponse($petition->load('files'), 'Petición actualizada correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al actualizar la petición', $e->getMessage(), 500);
         }
-
-        $petition->save();
-
-        return redirect()->route('admin.home')->with('success', 'Petición actualizada correctamente.');
     }
-    public function fileUpload($req, $petition_id = null)
+
+    // Subida de archivos
+    private function fileUpload(Request $request, $petition_id)
     {
-        $file = $req->file('file');
-        $fileModel = new File;
-        $fileModel->petition_id = $petition_id;
-        if ($req->file('file')) {
-            //return $req->file('file');
-
-            $filename = $fileName = time() . '_' . $file->getClientOriginalName();
-            //      Storage::put($filename, file_get_contents($req->file('file')->getRealPath()));
-            $file->move('petitions', $filename);
-
-            //  Storage::put($filename, file_get_contents($request->file('file')->getRealPath()));
-            //   $file->move('storage/', $name);
-
-
-            //$filePath = $req->file('file')->storeAs('/peticiones', $fileName, 'local');
-            //    $filePath = $req->file('file')->storeAs('/peticiones', $fileName, 'local');
-            // return $filePath;
-            $fileModel->name = $filename;
-            $fileModel->file_path = $filename;
-            $res = $fileModel->save();
-            return $fileModel;
+        if (!$request->hasFile('file')) {
+            return null;
         }
-        return 1;
+
+        $file = $request->file('file');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('petitions', $filename, 'public');
+
+        return File::create([
+            'petition_id' => $petition_id,
+            'name' => $filename,
+            'file_path' => $path
+        ]);
     }
-
-
-
 }

@@ -4,32 +4,59 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Petition;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AdminCategoryController extends Controller
 {
-    public function index() {
-        $categories = Category::all();
-        return view('admin.categories.index', compact('categories'));
-    }
-
-    public function delete($id)
+    private function sendResponse($data, $message, $code = 200)
     {
-        $petition = Category::findOrFail($id);
-        $petition->delete();
-        return back();
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'message' => $message
+        ], $code);
     }
 
-    public function create() {
-        return view('admin.categories.edit-add');
-    }
-
-    public function edit(Category $category)
+    private function sendError($error, $errorMessages = [], $code = 400)
     {
-        return view('admin.categories.edit-add', compact('category'));
+        $response = [
+            'success' => false,
+            'message' => $error,
+        ];
+
+        if (!empty($errorMessages)) {
+            $response['errors'] = $errorMessages;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    public function index()
+    {
+        try {
+            $categories = Category::all();
+            return $this->sendResponse($categories, 'Categorías obtenidas correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al obtener categorías', $e->getMessage(), 500);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|max:255',
+        ]);
+
+        try {
+            $category = Category::create([
+                'name' => $request->name
+            ]);
+
+            return $this->sendResponse($category, 'Categoría creada correctamente', 201);
+        } catch (Exception $e) {
+            return $this->sendError('Error al crear la categoría', $e->getMessage(), 500);
+        }
     }
 
     public function update(Request $request, Category $category)
@@ -38,32 +65,26 @@ class AdminCategoryController extends Controller
             'name' => 'required|max:255',
         ]);
 
-        $category->name = $request->name;
+        try {
+            $category->update([
+                'name' => $request->name
+            ]);
 
-        $category->save();
-
-        return redirect()->route('admin.categories')->with('success', 'Categoria actualizada correctamente.');
+            return $this->sendResponse($category, 'Categoría actualizada correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al actualizar la categoría', $e->getMessage(), 500);
+        }
     }
 
-    public function store(\Illuminate\Http\Request $request)
+    public function delete($id)
     {
-
-        $request->validate([
-            "name" => "required|max:255",
-        ]);
-
-        $input = $request->all();
         try {
+            $category = Category::findOrFail($id);
+            $category->delete();
 
-            $category = new Category();
-            $category->name = $request->name;
-            $res = $category->save();
-
-            if ($res) {
-                return redirect("/admin/categories");
-            }
-        } catch (Exception $exception) {
-            return back()->withErrors($exception->getMessage())->withInput();
+            return $this->sendResponse(null, 'Categoría eliminada correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al eliminar la categoría', $e->getMessage(), 500);
         }
     }
 }

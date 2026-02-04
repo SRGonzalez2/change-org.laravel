@@ -10,8 +10,8 @@ class Category extends Model
 
     protected $table = 'categories';
     protected $fillable = ['name'];
-    public function petitions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function petitions()
     {
-        return $this->hasMany('App\Models\Petition');
+        return $this->hasMany(Petition::class, 'categoria_id');
     }
 }

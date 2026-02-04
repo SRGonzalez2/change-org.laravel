@@ -6,26 +6,33 @@ use Illuminate\Database\Eloquent\Model;
 
 class Petition extends Model
 {
+    protected $fillable = [
+        'titulo',
+        'descripcion',
+        'destinatario',
+        'firmantes',
+        'estado',
+        'categoria_id',
+        'user_id'
+    ];
 
-    protected $fillable = ['title', 'description', 'destinatary', 'signeds', 'status'];
-    public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function category()
     {
-        return $this->belongsTo('App\Models\Category');
+        return $this->belongsTo(Category::class, 'categoria_id');
     }
 
-    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo(User::class);
     }
 
-    public function signedUsers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function firmas()
     {
-        return $this->belongsToMany('App\Models\User', 'petition_user');
+        return $this->belongsToMany(User::class, 'petition_user');
     }
 
-    public function file(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function files()
     {
-        return $this->hasOne('App\Models\File');
+        return $this->hasMany(File::class);
     }
-
 }

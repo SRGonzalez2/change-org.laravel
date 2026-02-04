@@ -3,61 +3,79 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Petition;
 use App\Models\User;
+use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
-
 class AdminUserController extends Controller
 {
-    public function index() {
-        $users = User::all();
-        return view('admin.users.index', compact('users'));
-    }
-
-    public function delete($id)
+    private function sendResponse($data, $message, $code = 200)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-        return back();
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'message' => $message
+        ], $code);
     }
 
-    public function create() {
-        return view('admin.users.edit-add');
+    private function sendError($error, $errorMessages = [], $code = 400)
+    {
+        $response = [
+            'success' => false,
+            'message' => $error,
+        ];
+
+        if (!empty($errorMessages)) {
+            $response['errors'] = $errorMessages;
+        }
+
+        return response()->json($response, $code);
     }
 
-    public function store(\Illuminate\Http\Request $request)
+    // Listar usuarios
+    public function index()
+    {
+        try {
+            $users = User::all();
+            return $this->sendResponse($users, 'Usuarios obtenidos correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al obtener usuarios', $e->getMessage(), 500);
+        }
+    }
+
+    // Crear usuario
+    public function store(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
             'password' => ['required', Rules\Password::defaults()],
             'role_id' => ['required', 'integer'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->role_id
-        ]);
-        event(new Registered($user));
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => strtolower($request->email),
+                'password' => Hash::make($request->password),
+                'role_id' => $request->role_id,
+            ]);
 
-        return redirect(route('admin.users', absolute: false));
+            event(new Registered($user));
+
+            return $this->sendResponse($user, 'Usuario creado correctamente', 201);
+        } catch (Exception $e) {
+            return $this->sendError('Error al crear el usuario', $e->getMessage(), 500);
+        }
     }
 
-    public function edit(User $user)
+    // Actualizar usuario
+    public function update(Request $request, User $user)
     {
-        return view('admin.users.edit-add', compact('user'));
-    }
-
-    public function update(Request $request, User $user) {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -68,21 +86,36 @@ class AdminUserController extends Controller
                 Rule::unique('users')->ignore($user->id),
             ],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role_id' => ['required', ],
+            'role_id' => ['required', 'integer'],
         ]);
 
-        $user->name = $request->name;
-        $user->email = strtolower($request->email);
-        $user->role_id = $request->role_id;
+        try {
+            $user->name = $request->name;
+            $user->email = strtolower($request->email);
+            $user->role_id = $request->role_id;
 
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->save();
+
+            return $this->sendResponse($user, 'Usuario actualizado correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al actualizar el usuario', $e->getMessage(), 500);
         }
-
-        $user->save();
-
-        return redirect()->route('admin.users')
-            ->with('success', 'Usuario actualizado correctamente');
     }
 
+    // Eliminar usuario
+    public function delete($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+
+            return $this->sendResponse(null, 'Usuario eliminado correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al eliminar el usuario', $e->getMessage(), 500);
+        }
+    }
 }

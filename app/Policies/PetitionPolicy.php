@@ -9,18 +9,6 @@ use Illuminate\Auth\Access\Response;
 class PetitionPolicy
 {
 
-    public function before(User $user, string $ability)
-    {
-        if( $user->role_id==2){
-            return true;
-        }
-    }
-
-    public function view(User $user, Petition $petition): bool
-    {
-        return true;
-    }
-
     /**
      * Determine whether the user can view any models.
      */
@@ -28,11 +16,13 @@ class PetitionPolicy
     {
         return false;
     }
-
     /**
      * Determine whether the user can view the model.
      */
-
+    public function view(User $user, Petition $peticione): bool
+    {
+        return true;
+    }
     /**
      * Determine whether the user can create models.
      */
@@ -40,49 +30,36 @@ class PetitionPolicy
     {
         return true;
     }
-
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Petition $petition): bool
+    public function update(User $user, Petition $peticione): bool
     {
-        if($user->role_id==1 && $petition->user_id==$user->id){
-            return true;
-        }
-        return false;
+        return $peticione->user_id==$user->id;
     }
-
-    public function edit(User $user, Petition $petition): bool {
-        if($user->role_id==1 && $petition->user_id==$user->id){
-            return true;
-        }
-        return false;
-    }
-
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Petition $petition): bool
+    public function delete(User $user, Petition $peticione): bool
     {
-        if($user->role_id == 1 && $petition->user_id == $user->id) {
-            return true;
-        }
-        return false;
+        return $peticione->user_id==$user->id;
     }
-
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Petition $petition): bool
+    public function restore(User $user, Petition $peticione): bool
     {
-        return false;
+        return true;
     }
-
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Petition $petition): bool
+    public function forceDelete(User $user, Petition $peticione): bool
     {
         return false;
     }
+    public function firmar(User $user, Petition $peticione){
+        return $user->id != $peticione->user_id;
+    }
+
 }

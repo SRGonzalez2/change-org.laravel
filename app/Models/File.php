@@ -6,11 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class File extends Model
 {
-    protected $fillable = ['name', 'file_path'];
+    protected $fillable = [
+        'petition_id',
+        'name',
+        'file_path'
+    ];
+    protected $table = 'files';
 
-    public function petition(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+
+    public function petition()
     {
-        return $this->belongsTo('App\Models\Petition');
+        return $this->belongsTo(Petition::class);
     }
-
 }
