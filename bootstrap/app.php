@@ -4,7 +4,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,14 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
+    ->withMiddleware(function (Middleware $middleware) {
         //
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function (AuthenticationException $e, Request $request) {
-            if ($request->is('api/*')) {
+    ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->render(function (Throwable $exception, Request $request) {
+            if ($exception instanceof AuthenticationException) {
                 return response()->json([
-                    'message' => $e->getMessage(),
+                    'success' => false,
+                    'message' => 'No autenticado. Token inválido o no proporcionado.'
                 ], 401);
             }
         });

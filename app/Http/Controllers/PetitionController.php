@@ -73,10 +73,10 @@ class PetitionController extends Controller
 
     public function store(Request $request) {
         $validator = Validator::make($request->all(), [
-            'titulo' => 'required|max:255',
-            'descripcion' => 'required',
-            'destinatario' => 'required',
-            'categoria_id' => 'required|exists:categories,id',
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'destinatary' => 'required',
+            'category_id' => 'required|exists:categories,id',
             'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:4096',
         ]);
         if ($validator->fails()) {
@@ -87,8 +87,8 @@ class PetitionController extends Controller
                 $path = $file->store('peticiones', 'public');
                 $peticion = new Petition($request->all());
                 $peticion->user_id = Auth::id();
-                $peticion->firmantes = 0;
-                $peticion->estado = 'pendiente';
+                $peticion->signeds = 0;
+                $peticion->status = 'pending';
                 $peticion->save();
                 $peticion->files()->create([
                     'name' => $file->getClientOriginalName(),
@@ -124,7 +124,7 @@ class PetitionController extends Controller
                 return $this->sendError('Ya has firmado esta petición', [], 403);
             }
             $peticion->firmas()->attach($user->id);
-            $peticion->increment('firmantes'); // Más limpio que $peticion‐>firmantes + 1
+            $peticion->increment('signeds'); // Más limpio que $peticion‐>firmantes + 1
             return $this->sendResponse($peticion, 'Petición firmada con éxito', 201);
         } catch (\Exception $e) {
             return $this->sendError('No se pudo firmar la petición', $e->getMessage(), 500);

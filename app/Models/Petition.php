@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Petition extends Model
 {
     protected $fillable = [
-        'titulo',
-        'descripcion',
-        'destinatario',
-        'firmantes',
-        'estado',
-        'categoria_id',
+        'title',
+        'description',
+        'destinatary',
+        'signeds',
+        'status',
+        'category_id',
         'user_id'
     ];
 
