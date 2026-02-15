@@ -52,7 +52,7 @@ class PetitionController extends Controller
         }
     }
 
-    public function listMine() {
+    public function listmine() {
         try {
             $user = Auth::user();
             $peticiones = Petition::where('user_id', $user->id)->with(['user', 'category', 'files'])->get();
@@ -62,9 +62,42 @@ class PetitionController extends Controller
         }
     }
 
+    public function listfirmadas() {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return $this->sendError('Usuario no autenticado', [], 401);
+            }
+
+            $peticiones = $user->signedPetitions()
+                ->with(['user', 'category', 'files'])
+                ->get()
+                ->map(function($petition) {
+                    // Agregar la fecha de firma desde la tabla pivot
+                    $petition->signed_at = $petition->pivot->created_at;
+                    return $petition;
+                });
+
+            return $this->sendResponse($peticiones, 'Peticiones firmadas recuperadas con éxito');
+
+        } catch (\Exception $e) {
+            return $this->sendError('Error al recuperar peticiones firmadas', $e->getMessage(), 500);
+        }
+    }
+
     public function show($id) {
         try {
             $peticion = Petition::with(['user', 'category', 'files'])->findOrFail($id);
+
+            $firmada = false;
+
+            if($user = Auth::user()) {
+                $firmada = $peticion->firmas()->where('user_id', $user->id)->exists();
+            }
+
+            $peticion->firmada = $firmada;
+
             return $this->sendResponse($peticion, 'Petición encontrada');
         } catch (\Exception $e) {
             return $this->sendError('Petición no encontrada', [], 404);
@@ -77,7 +110,7 @@ class PetitionController extends Controller
             'description' => 'required',
             'destinatary' => 'required',
             'category_id' => 'required|exists:categories,id',
-            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:4096',
+            'file' => 'required|image|max:4096',
         ]);
         if ($validator->fails()) {
             return $this->sendError('Error de validación', $validator->errors(), 422);
@@ -103,18 +136,49 @@ class PetitionController extends Controller
         }
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id): \Illuminate\Http\JsonResponse
+    {
         try {
             $peticion = Petition::findOrFail($id);
+
             if ($request->user()->cannot('update', $peticion)) {
                 return $this->sendError('No autorizado', [], 403);
             }
-            $peticion->update($request->all());
-            return $this->sendResponse($peticion, 'Petición actualizada con éxito');
+
+            $peticion->update($request->only(['title', 'description', 'destinatary',
+                'category_id']));
+
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $cleanName = str_replace(' ', '_', $file->getClientOriginalName());
+
+                $finalName = time() . '_' . $cleanName;
+
+                $path = $file->storeAs('peticiones', $finalName, 'public');
+                // 4. Lógica de guardado en BBDD (tu código explícito)
+                $fileRecord = $peticion->files()->first();
+                if ($fileRecord) {
+                    // Opcional: Borrar el viejo del disco
+                    // Storage::disk('public')‐>delete($fileRecord‐>file_path);
+                    $fileRecord->update([
+                        'name' => $file->getClientOriginalName(), // Nombre para mostrar bonito
+                        'file_path' => $path // Ruta física: "peticiones/175849_f4.jpg"
+                    ]);
+
+                } else {
+                    $peticion->files()->create([
+                        'name' => $file->getClientOriginalName(),
+                        'file_path' => $path
+                    ]);
+                }
+            }
+
+            return $this->sendResponse($peticion->load('files'), 'Petición actualizada con éxito');
         } catch (\Exception $e) {
             return $this->sendError('Error al actualizar', $e->getMessage(), 500);
         }
     }
+
 
     public function firmar(Request $request, $id) {
         try {

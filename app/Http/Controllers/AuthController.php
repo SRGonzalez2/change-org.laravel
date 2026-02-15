@@ -60,7 +60,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
-        JWTAuth::logout();
+        JWTAuth::invalidate(JWTAuth::getToken());
         return response()->json([
             'message' => 'Sesión cerrada correctamente'
         ]);
