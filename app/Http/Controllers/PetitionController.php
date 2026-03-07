@@ -110,27 +110,33 @@ class PetitionController extends Controller
             'description' => 'required',
             'destinatary' => 'required',
             'category_id' => 'required|exists:categories,id',
-            'file' => 'required|image|max:4096',
+            'files.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
         if ($validator->fails()) {
             return $this->sendError('Error de validación', $validator->errors(), 422);
         }
         try {
-            if ($file = $request->file('file')) {
-                $path = $file->store('peticiones', 'public');
-                $peticion = new Petition($request->all());
-                $peticion->user_id = Auth::id();
-                $peticion->signeds = 0;
-                $peticion->status = 'pending';
-                $peticion->save();
-                $peticion->files()->create([
-                    'name' => $file->getClientOriginalName(),
-                    'file_path' => $path
-                ]);
-                return $this->sendResponse($peticion->load('files'), 'Petición creada con
-                éxito', 201);
+
+            $peticion = Petition::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'destinatary' => $request->destinatary,
+                "category_id" => $request->category_id,
+                "user_id" => Auth::id(),
+                "signeds" => 0,
+                "status" => "pending"
+            ]);
+
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $path = $file->store('peticiones', 'public');
+                    $peticion->files()->create([
+                        'file_path' => $path,
+                        'name' => $file->getClientOriginalName()
+                    ]);
+                }
             }
-            return $this->sendError('El archivo es obligatorio', [], 422);
+            return $this->sendResponse($peticion->load('files'), 'Petición creada con éxito', 201);
         } catch (\Exception $e) {
             return $this->sendError('Error al crear la petición', $e->getMessage(), 500);
         }
@@ -148,30 +154,22 @@ class PetitionController extends Controller
             $peticion->update($request->only(['title', 'description', 'destinatary',
                 'category_id']));
 
-            if ($request->hasFile('file')) {
-                $file = $request->file('file');
-                $cleanName = str_replace(' ', '_', $file->getClientOriginalName());
+                //Borramos las viejas
+                foreach ($peticion->files as $file) {
+                    Storage::disk('public')->delete($file->file_path);
+                }
+                $peticion->files()->delete();
 
-                $finalName = time() . '_' . $cleanName;
+                foreach ($request->file('files') as $file) {
+                    $cleanName = str_replace(' ', '_', $file->getClientOriginalName());
+                    $finalName = time() . '_' . $cleanName;
+                    $path = $file->storeAs('peticiones', $finalName, 'public');
 
-                $path = $file->storeAs('peticiones', $finalName, 'public');
-                // 4. Lógica de guardado en BBDD (tu código explícito)
-                $fileRecord = $peticion->files()->first();
-                if ($fileRecord) {
-                    // Opcional: Borrar el viejo del disco
-                    // Storage::disk('public')‐>delete($fileRecord‐>file_path);
-                    $fileRecord->update([
-                        'name' => $file->getClientOriginalName(), // Nombre para mostrar bonito
-                        'file_path' => $path // Ruta física: "peticiones/175849_f4.jpg"
-                    ]);
-
-                } else {
                     $peticion->files()->create([
                         'name' => $file->getClientOriginalName(),
                         'file_path' => $path
                     ]);
                 }
-            }
 
             return $this->sendResponse($peticion->load('files'), 'Petición actualizada con éxito');
         } catch (\Exception $e) {
