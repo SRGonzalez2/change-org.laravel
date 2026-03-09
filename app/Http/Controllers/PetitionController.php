@@ -36,7 +36,9 @@ class PetitionController extends Controller
 
     public function index() {
         try {
-            $peticiones = Petition::with(['user', 'category', 'files'])->get();
+            $peticiones = Petition::with(['user', 'category', 'files'])
+                ->withCount('firmas')
+                ->get();
             return $this->sendResponse($peticiones, 'Peticiones recuperadas con éxito');
         } catch (\Exception $e) {
             return $this->sendError('Error al recuperar peticiones', $e->getMessage(), 500);
