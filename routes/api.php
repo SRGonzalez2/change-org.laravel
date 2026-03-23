@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PetitionController;
 use Illuminate\Http\Request;
@@ -26,3 +27,8 @@ Route::get('peticiones/{id}', [\App\Http\Controllers\PetitionController::class,'
 Route::get('categorias', [\App\Http\Controllers\CategoryController::class,'index']);
 
 Route::middleware('api')->post('refresh', [AuthController::class, 'refresh']);
+
+Route::middleware(['auth:api', 'is_admin'])->prefix('admin')->group(function () {
+    Route::get('/peticiones', [AdminController::class, 'indexPeticiones']);
+    Route::delete('/peticiones/{id}', [AdminController::class, 'destroyPeticion']);
+});
