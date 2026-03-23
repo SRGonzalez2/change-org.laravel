@@ -10,7 +10,7 @@ class AdminController extends Controller
 
     // 1. Listar todas las peticiones para el panel
     public function indexPeticiones() {
-        $peticiones = Petition::with(['categoria', 'user', 'files'])
+        $peticiones = Petition::with(['category', 'user', 'files'])
             ->withCount('firmas')
             ->orderBy('created_at', 'desc')
             ->get();

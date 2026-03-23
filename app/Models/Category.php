@@ -12,6 +12,6 @@ class Category extends Model
     protected $fillable = ['name'];
     public function petitions()
     {
-        return $this->hasMany(Petition::class, 'categoria_id');
+        return $this->hasMany(Petition::class, 'category_id');
     }
 }
