@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\AdminControllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\File;
 use App\Models\Petition;
@@ -9,7 +10,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminController extends Controller
+class AdminPeticionController extends Controller
 {
 
     private function sendError($error, $errorMessages = [], $code = 400)

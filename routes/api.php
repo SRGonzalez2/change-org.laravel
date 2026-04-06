@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminControllers\AdminPeticionController;
+use App\Http\Controllers\AdminControllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PetitionController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:api')->group(function () {
@@ -29,10 +29,19 @@ Route::get('categorias', [\App\Http\Controllers\CategoryController::class,'index
 Route::middleware('api')->post('refresh', [AuthController::class, 'refresh']);
 
 Route::middleware(['auth:api', 'is_admin'])->prefix('admin')->group(function () {
-    Route::get('/peticiones', [AdminController::class, 'indexPeticiones']);
-    Route::delete('/peticiones/{id}', [AdminController::class, 'destroyPeticion']);
-    Route::post('/peticiones', [AdminController::class, 'storePeticion']);
-    Route::get('/peticiones/{id}', [AdminController::class, 'showPeticion']);
-    Route::post('/peticiones/{id}', [AdminController::class, 'updatePeticion']);
+
+    //Peticiones
+    Route::get('/peticiones', [AdminPeticionController::class, 'indexPeticiones']);
+    Route::delete('/peticiones/{id}', [AdminPeticionController::class, 'destroyPeticion']);
+    Route::post('/peticiones', [AdminPeticionController::class, 'storePeticion']);
+    Route::get('/peticiones/{id}', [AdminPeticionController::class, 'showPeticion']);
+    Route::post('/peticiones/{id}', [AdminPeticionController::class, 'updatePeticion']);
+
+    //Usuarios
+    Route::get('/users', [AdminUserController::class, 'indexUsers']);
+    Route::get('/users/{id}', [AdminUserController::class, 'showUser']);
+    Route::post('/users', [AdminUserController::class, 'storeUser']);
+    Route::post('/users/{id}', [AdminUserController::class, 'updateUser']);
+    Route::delete('/users/{id}', [AdminUserController::class, 'delete']);
 
 });
