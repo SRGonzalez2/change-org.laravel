@@ -41,7 +41,7 @@ Route::middleware(['auth:api', 'is_admin'])->prefix('admin')->group(function () 
     Route::get('/users', [AdminUserController::class, 'indexUsers']);
     Route::get('/users/{id}', [AdminUserController::class, 'showUser']);
     Route::post('/users', [AdminUserController::class, 'storeUser']);
-    Route::post('/users/{id}', [AdminUserController::class, 'updateUser']);
+    Route::post('/users/{user}', [AdminUserController::class, 'update']);
     Route::delete('/users/{id}', [AdminUserController::class, 'delete']);
 
 });

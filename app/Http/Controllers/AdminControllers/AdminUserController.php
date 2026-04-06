@@ -47,6 +47,11 @@ class AdminUserController extends Controller
         ], 200);
     }
 
+    public function showUser($id) {
+        $user = User::findOrFail($id);
+        return $this->sendResponse($user, 'Usuario obtenido correctamente');
+    }
+
 
     public function storeUser(Request $request)
     {
@@ -62,7 +67,7 @@ class AdminUserController extends Controller
                 'name' => $request->name,
                 'email' => strtolower($request->email),
                 'password' => Hash::make($request->password),
-                'role_id' => $request->role_id,
+                'role' => $request->role,
             ]);
 
             event(new Registered($user));
@@ -70,6 +75,38 @@ class AdminUserController extends Controller
             return $this->sendResponse($user, 'Usuario creado correctamente', 201);
         } catch (Exception $e) {
             return $this->sendError('Error al crear el usuario', $e->getMessage(), 500);
+        }
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', 'in:user,admin'],
+        ]);
+
+        try {
+            $user->name = $request->name;
+            $user->email = strtolower($request->email);
+            $user->role = $request->role;
+
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->save();
+
+            return $this->sendResponse($user, 'Usuario actualizado correctamente');
+        } catch (Exception $e) {
+            return $this->sendError('Error al actualizar el usuario', $e->getMessage(), 500);
         }
     }
 
