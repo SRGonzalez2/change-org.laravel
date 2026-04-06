@@ -31,4 +31,8 @@ Route::middleware('api')->post('refresh', [AuthController::class, 'refresh']);
 Route::middleware(['auth:api', 'is_admin'])->prefix('admin')->group(function () {
     Route::get('/peticiones', [AdminController::class, 'indexPeticiones']);
     Route::delete('/peticiones/{id}', [AdminController::class, 'destroyPeticion']);
+    Route::post('/peticiones', [AdminController::class, 'storePeticion']);
+    Route::get('/peticiones/{id}', [AdminController::class, 'showPeticion']);
+    Route::post('/peticiones/{id}', [AdminController::class, 'updatePeticion']);
+
 });
