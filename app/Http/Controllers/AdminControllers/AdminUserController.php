@@ -89,7 +89,7 @@ class AdminUserController extends Controller
                 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'password' => ['nullable', Rules\Password::defaults()],
             'role' => ['required', 'string', 'in:user,admin'],
         ]);
 

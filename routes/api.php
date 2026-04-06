@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminControllers\AdminCategoryController;
 use App\Http\Controllers\AdminControllers\AdminPeticionController;
 use App\Http\Controllers\AdminControllers\AdminUserController;
 use App\Http\Controllers\AuthController;
@@ -43,5 +44,11 @@ Route::middleware(['auth:api', 'is_admin'])->prefix('admin')->group(function () 
     Route::post('/users', [AdminUserController::class, 'storeUser']);
     Route::post('/users/{user}', [AdminUserController::class, 'update']);
     Route::delete('/users/{id}', [AdminUserController::class, 'delete']);
+
+    Route::get('/categories', [AdminCategoryController::class, 'index']);
+    Route::post('/categories', [AdminCategoryController::class, 'store']);
+    Route::delete('/categories/{id}', [AdminCategoryController::class, 'delete']);
+    Route::get('/categories/{id}', [AdminCategoryController::class, 'show']);
+    Route::post('/categories/{category}', [AdminCategoryController::class, 'update']);
 
 });

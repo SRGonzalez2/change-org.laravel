@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\AdminControllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -35,7 +36,7 @@ class AdminCategoryController extends Controller
     public function index()
     {
         try {
-            $categories = Category::all();
+            $categories = Category::withCount('petitions')->get();
             return $this->sendResponse($categories, 'Categorías obtenidas correctamente');
         } catch (Exception $e) {
             return $this->sendError('Error al obtener categorías', $e->getMessage(), 500);
@@ -87,4 +88,10 @@ class AdminCategoryController extends Controller
             return $this->sendError('Error al eliminar la categoría', $e->getMessage(), 500);
         }
     }
+
+    public function show($id) {
+        $category = Category::findOrFail($id);
+        return $this->sendResponse($category, 'Categoria obtenida correctamente');
+    }
+
 }
